@@ -1,0 +1,11 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "online.bgdv.twa",
+    "sha256_cert_fingerprints": [
+      "5F:CF:29:8E:91:E9:3E:65:B0:40:B7:41:69:8E:C4:9F:62:5E:03:37:22:BC:38:5D:5C:6E:C0:1B:E3:90:0D:82",
+      "3C:E5:FB:50:D3:50:9C:98:04:37:48:F2:D8:66:5E:E9:9D:76:0E:A9:CD:CB:91:B8:47:AA:EE:BE:EE:61:ED:B3"
+    ]
+  }
+}]
