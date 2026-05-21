@@ -1,0 +1,162 @@
+:root {
+  --primary: #22c55e;
+  --bg: #0f172a;
+  --card: #1e293b;
+  --text: #f8fafc;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* CENTRALIZA PERFEITO */
+.app-container {
+  max-width: 420px;
+  margin: auto;
+  padding: 20px;
+}
+
+/* HEADER */
+header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.logo {
+  font-size: 32px;
+  font-weight: 800;
+}
+
+.logo span { color: var(--primary); }
+
+.tagline {
+  color: #94a3b8;
+}
+
+/* CARD */
+.main-card {
+  background: var(--card);
+  padding: 25px;
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+/* INPUT */
+input {
+  width: 100%;
+  padding: 16px;
+  border-radius: 14px;
+  border: none;
+  background: #020617;
+  color: #fff;
+  margin-top: 10px;
+}
+
+/* BOTÃO */
+.glow-button {
+  width: 100%;
+  padding: 16px;
+  margin-top: 20px;
+  border-radius: 14px;
+  border: none;
+  background: var(--primary);
+  color: #fff;
+  font-weight: bold;
+}
+
+/* RESULTADO */
+.result-box {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.result-box input {
+  flex: 1;
+}
+
+/* BOTÃO COPIAR PREMIUM */
+#copyBtn {
+  background: #16a34a;
+  border: none;
+  padding: 0 16px;
+  border-radius: 12px;
+  color: #fff;
+  font-weight: bold;
+}
+
+/* ANIMAÇÃO */
+.animate-pop {
+  animation: pop 0.4s ease;
+}
+
+@keyframes pop {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* STATS */
+.stats {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+/* FEATURES */
+.features-grid {
+  display: flex;
+  gap: 10px;
+  margin-top: 25px;
+}
+
+.f-item {
+  flex: 1;
+  background: #1e293b;
+  padding: 15px;
+  border-radius: 12px;
+  text-align: center;
+}
+
+/* ABOUT */
+.about {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.about p {
+  color: #94a3b8;
+}
+
+/* FAQ */
+.faq-section {
+  margin-top: 30px;
+}
+
+.faq-item {
+  background: #1e293b;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  padding: 10px;
+}
+
+/* FOOTER FIXO */
+.footer-fixed {
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 12px;
+}
+
+.footer-links a {
+  color: var(--primary);
+  margin: 0 10px;
+  font-size: 12px;
+}
+
+body {
+    padding-bottom: 80px;
+}
