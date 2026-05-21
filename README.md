@@ -1,0 +1,1 @@
+# BgD-encurtador
