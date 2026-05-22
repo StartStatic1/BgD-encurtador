@@ -56,21 +56,6 @@ app.get("/link-curto.html", (req, res) => res.redirect(301, "/"));
 app.get("/url-curta.html", (req, res) => res.redirect(301, "/"));
 
 /* =========================
-   🔐 ASSETLINKS (Android App Links)
-========================= */
-app.get("/.well-known/assetlinks.json", (req, res) => {
-  res.setHeader("Content-Type", "application/json");
-  res.json([{
-    "relation": ["delegate_permission/common.handle_all_urls"],
-    "target": {
-      "namespace": "android_app",
-      "package_name": "com.mnilink.app",
-      "sha256_cert_fingerprints": ["65:C9:93:CF:FF:7A:47:B3:6A:C8:D3:73:D3:36:C8:30:66:7D:25:DF:BC:D7:1A:14:71:AB:E1:DB:40:66:C8:89"]
-    }
-  }]);
-});
-
-/* =========================
    🔢 BASE62 UTILS
 ========================= */
 const BASE62 = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -100,7 +85,7 @@ app.get("/encurtar", async (req, res) => {
   }
 
   try {
-    // 1️⃣ Busca o maior ID atual
+    // 1️⃣ Busca o maior ID atual na tabela
     const countRes = await fetch(
       `${SUPABASE_URL}/rest/v1/links?select=id&order=id.desc&limit=1`,
       {
@@ -117,7 +102,7 @@ app.get("/encurtar", async (req, res) => {
     const nextId = lastId + 1;
     const codigo = toBase62(nextId);
 
-    // 2️⃣ Salva no Supabase (com clicks = 0)
+    // 2️⃣ Salva no Supabase (id auto-increment + codigo_curto)
     const response = await fetch(`${SUPABASE_URL}/rest/v1/links`, {
       method: "POST",
       headers: {
@@ -130,7 +115,6 @@ app.get("/encurtar", async (req, res) => {
         id: nextId,
         codigo_curto: codigo,
         url_longa: urlLonga,
-        clicks: 0,
       }),
     });
 
@@ -152,51 +136,18 @@ app.get("/encurtar", async (req, res) => {
 });
 
 /* =========================
-   📊 API: CONTADOR DE CLIQUES
-========================= */
-app.get("/api/clicks/:codigo", async (req, res) => {
-  const codigo = req.params.codigo;
-
-  try {
-    const response = await fetch(
-      `${SUPABASE_URL}/rest/v1/links?codigo_curto=eq.${encodeURIComponent(codigo)}&select=clicks`,
-      {
-        headers: {
-          apikey: SUPABASE_KEY,
-          Authorization: `Bearer ${SUPABASE_KEY}`,
-          Accept: "application/json",
-        },
-      }
-    );
-
-    const data = await response.json();
-
-    if (data.length > 0) {
-      return res.json({ clicks: data[0].clicks || 0 });
-    } else {
-      return res.status(404).json({ erro: "Link não encontrado" });
-    }
-
-  } catch (err) {
-    console.error("Erro clicks:", err);
-    return res.status(500).json({ erro: "Erro no servidor" });
-  }
-});
-
-/* =========================
-   🔁 REDIRECIONAR LINK CURTO + INCREMENTAR CLIQUES
+   🔁 REDIRECIONAR LINK CURTO
 ========================= */
 app.get("/:codigo", async (req, res) => {
   const codigo = req.params.codigo;
 
-  if (codigo.includes(".") || codigo === "encurtar" || codigo.startsWith("api")) {
+  if (codigo.includes(".") || codigo === "encurtar") {
     return res.status(404).send("Página não encontrada");
   }
 
   try {
-    // 1️⃣ Busca o link
     const response = await fetch(
-      `${SUPABASE_URL}/rest/v1/links?codigo_curto=eq.${encodeURIComponent(codigo)}&select=url_longa,clicks`,
+      `${SUPABASE_URL}/rest/v1/links?codigo_curto=eq.${encodeURIComponent(codigo)}&select=url_longa`,
       {
         headers: {
           apikey: SUPABASE_KEY,
@@ -209,29 +160,7 @@ app.get("/:codigo", async (req, res) => {
     const data = await response.json();
 
     if (data.length > 0) {
-      const urlLonga = data[0].url_longa;
-      const clicksAtual = data[0].clicks || 0;
-
-      // 2️⃣ INCREMENTA O CONTADOR (RPC ou PATCH)
-      // Método PATCH: atualiza clicks diretamente
-      await fetch(
-        `${SUPABASE_URL}/rest/v1/links?codigo_curto=eq.${encodeURIComponent(codigo)}`,
-        {
-          method: "PATCH",
-          headers: {
-            apikey: SUPABASE_KEY,
-            Authorization: `Bearer ${SUPABASE_KEY}`,
-            "Content-Type": "application/json",
-            Prefer: "return=minimal",
-          },
-          body: JSON.stringify({
-            clicks: clicksAtual + 1,
-          }),
-        }
-      );
-
-      // 3️⃣ Redireciona
-      return res.redirect(urlLonga);
+      return res.redirect(data[0].url_longa);
     } else {
       return res.status(404).send("Link não encontrado");
     }

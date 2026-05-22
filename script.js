@@ -48,15 +48,10 @@ shortenBtn.addEventListener('click', async () => {
         box.classList.add('animate-pop');
       }
 
-      // Mostra contador (começa com 0)
-      if (clicksEl && stats) {
-        clicksEl.innerText = data.clicks || 0;
+      if (data.clicks !== undefined && clicksEl && stats) {
+        clicksEl.innerText = data.clicks;
         stats.classList.remove('hidden');
       }
-
-      // 🆕 Busca contador real do servidor a cada 3 segundos
-      const codigo = data.link_curto.split('/').pop();
-      iniciarAtualizacaoCliques(codigo);
     }
 
   } catch (err) {
@@ -100,36 +95,3 @@ longUrlInput.addEventListener('keydown', (e) => {
     shortenBtn.click();
   }
 });
-
-/* =========================
-   🔄 ATUALIZAR CONTADOR EM TEMPO REAL
-========================= */
-let intervaloCliques = null;
-
-function iniciarAtualizacaoCliques(codigo) {
-  // Limpa intervalo anterior
-  if (intervaloCliques) {
-    clearInterval(intervaloCliques);
-  }
-
-  // Busca imediatamente
-  buscarCliques(codigo);
-
-  // Atualiza a cada 5 segundos
-  intervaloCliques = setInterval(() => {
-    buscarCliques(codigo);
-  }, 5000);
-}
-
-async function buscarCliques(codigo) {
-  try {
-    const res = await fetch(`/api/clicks/${encodeURIComponent(codigo)}`);
-    const data = await res.json();
-
-    if (res.ok && data.clicks !== undefined && clicksEl) {
-      clicksEl.innerText = data.clicks;
-    }
-  } catch (err) {
-    console.error("Erro ao buscar cliques:", err);
-  }
-}
