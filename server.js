@@ -4,13 +4,11 @@ import { fileURLToPath } from "url";
 
 const app = express();
 
-// Corrige __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 3000;
 
-// ENV
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
@@ -45,6 +43,10 @@ app.get("/melhor-encurtador-links-2026.html", (req, res) => {
   res.sendFile(path.join(__dirname, "melhor-encurtador-links-2026.html"));
 });
 
+app.get("/dicas.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "dicas.html"));
+});
+
 /* =========================
    🔁 REDIRECIONAR PÁGINAS ANTIGAS
 ========================= */
@@ -54,7 +56,22 @@ app.get("/link-curto.html", (req, res) => res.redirect(301, "/"));
 app.get("/url-curta.html", (req, res) => res.redirect(301, "/"));
 
 /* =========================
-   🔗 ENCURTAR LINK (4 CARACTERES + VERIFICA COLISÃO + HTTPS)
+   🔢 BASE62 UTILS
+========================= */
+const BASE62 = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+function toBase62(num) {
+  if (num === 0) return "0";
+  let result = "";
+  while (num > 0) {
+    result = BASE62[num % 62] + result;
+    num = Math.floor(num / 62);
+  }
+  return result;
+}
+
+/* =========================
+   🔗 ENCURTAR LINK (BASE62 SEQUENCIAL)
 ========================= */
 app.get("/encurtar", async (req, res) => {
   const urlLonga = req.query.url;
@@ -68,31 +85,24 @@ app.get("/encurtar", async (req, res) => {
   }
 
   try {
-    let codigo;
-    let existe = true;
-    let tentativas = 0;
+    // 1️⃣ Busca o maior ID atual na tabela
+    const countRes = await fetch(
+      `${SUPABASE_URL}/rest/v1/links?select=id&order=id.desc&limit=1`,
+      {
+        headers: {
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${SUPABASE_KEY}`,
+          Accept: "application/json",
+        },
+      }
+    );
 
-    // Gera código e verifica se já existe no banco (evita colisão)
-    while (existe && tentativas < 10) {
-      codigo = Math.random().toString(36).substring(2, 6); // 4 chars
+    const countData = await countRes.json();
+    const lastId = countData.length > 0 ? countData[0].id : 0;
+    const nextId = lastId + 1;
+    const codigo = toBase62(nextId);
 
-      const check = await fetch(
-        `${SUPABASE_URL}/rest/v1/links?codigo_curto=eq.${codigo}&select=codigo_curto`,
-        {
-          headers: {
-            apikey: SUPABASE_KEY,
-            Authorization: `Bearer ${SUPABASE_KEY}`,
-            Accept: "application/json",
-          },
-        }
-      );
-
-      const data = await check.json();
-      existe = data.length > 0; // Se encontrou, gera outro
-      tentativas++;
-    }
-
-    // Salva no Supabase
+    // 2️⃣ Salva no Supabase (id auto-increment + codigo_curto)
     const response = await fetch(`${SUPABASE_URL}/rest/v1/links`, {
       method: "POST",
       headers: {
@@ -102,6 +112,7 @@ app.get("/encurtar", async (req, res) => {
         Prefer: "return=minimal",
       },
       body: JSON.stringify({
+        id: nextId,
         codigo_curto: codigo,
         url_longa: urlLonga,
       }),
@@ -113,11 +124,10 @@ app.get("/encurtar", async (req, res) => {
       return res.status(500).json({ erro: "Erro ao salvar link" });
     }
 
-    // Força HTTPS no Zeabur (usa o header x-forwarded-proto)
     const protocolo = req.headers["x-forwarded-proto"] || req.protocol;
     const linkCurto = `${protocolo}://${req.get("host")}/${codigo}`;
 
-    return res.json({ link_curto: linkCurto });
+    return res.json({ link_curto: linkCurto, clicks: 0 });
 
   } catch (err) {
     console.error("Erro geral:", err);
@@ -131,7 +141,7 @@ app.get("/encurtar", async (req, res) => {
 app.get("/:codigo", async (req, res) => {
   const codigo = req.params.codigo;
 
-  if (codigo.includes(".")) {
+  if (codigo.includes(".") || codigo === "encurtar") {
     return res.status(404).send("Página não encontrada");
   }
 

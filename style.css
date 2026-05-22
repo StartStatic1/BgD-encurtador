@@ -1,162 +1,447 @@
 :root {
-  --primary: #22c55e;
-  --bg: #0f172a;
-  --card: #1e293b;
-  --text: #f8fafc;
+  --primary: #00f0ff;
+  --primary-dark: #00b8c4;
+  --secondary: #a855f7;
+  --bg: #030712;
+  --card: rgba(15, 23, 42, 0.65);
+  --card-border: rgba(255, 255, 255, 0.08);
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --success: #22c55e;
+  --glow-primary: 0 0 20px rgba(0, 240, 255, 0.3);
+  --glow-secondary: 0 0 30px rgba(168, 85, 247, 0.25);
 }
+
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
 
-/* CENTRALIZA PERFEITO */
+/* =========================
+   🌌 BACKGROUND ANIMADO
+========================= */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(168, 85, 247, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(0, 240, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 50%, rgba(15, 23, 42, 1) 0%, var(--bg) 100%);
+  z-index: -2;
+  pointer-events: none;
+}
+
+/* =========================
+   📱 CONTAINER
+========================= */
 .app-container {
-  max-width: 420px;
+  max-width: 520px;
   margin: auto;
-  padding: 20px;
+  padding: 24px;
+  position: relative;
 }
 
-/* HEADER */
+/* =========================
+   ✨ HEADER
+========================= */
 header {
   text-align: center;
-  margin-bottom: 20px;
+  margin-bottom: 32px;
+  padding-top: 20px;
 }
 
 .logo {
-  font-size: 32px;
+  font-size: 36px;
   font-weight: 800;
+  letter-spacing: -1px;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: inline-block;
+  filter: drop-shadow(0 0 12px rgba(0, 240, 255, 0.4));
 }
 
-.logo span { color: var(--primary); }
+.logo span {
+  -webkit-text-fill-color: var(--text);
+  background: none;
+  font-weight: 600;
+  opacity: 0.9;
+}
 
 .tagline {
-  color: #94a3b8;
+  color: var(--text-muted);
+  font-size: 15px;
+  margin-top: 8px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
 }
 
-/* CARD */
+/* =========================
+   🃏 CARD PRINCIPAL
+========================= */
 .main-card {
   background: var(--card);
-  padding: 25px;
-  border-radius: 20px;
-  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--card-border);
+  padding: 32px;
+  border-radius: 24px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), var(--glow-primary);
+  position: relative;
+  overflow: hidden;
 }
 
-/* INPUT */
-input {
+.main-card::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--primary), transparent);
+  opacity: 0.6;
+}
+
+.main-card label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--primary);
+  margin-bottom: 10px;
+}
+
+/* =========================
+   📝 INPUT
+========================= */
+input[type="url"], input[type="text"] {
   width: 100%;
-  padding: 16px;
-  border-radius: 14px;
-  border: none;
-  background: #020617;
+  padding: 16px 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(2, 6, 23, 0.6);
   color: #fff;
-  margin-top: 10px;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.3s ease;
 }
 
-/* BOTÃO */
+input[type="url"]::placeholder {
+  color: #475569;
+}
+
+input[type="url"]:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(0, 240, 255, 0.1);
+}
+
+/* =========================
+   🔘 BOTÃO PRINCIPAL
+========================= */
 .glow-button {
   width: 100%;
-  padding: 16px;
+  padding: 18px;
   margin-top: 20px;
-  border-radius: 14px;
+  border-radius: 16px;
   border: none;
-  background: var(--primary);
-  color: #fff;
-  font-weight: bold;
+  background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+  color: #030712;
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.3s;
+  box-shadow: 0 4px 20px rgba(0, 240, 255, 0.25);
 }
 
-/* RESULTADO */
+.glow-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 240, 255, 0.4);
+}
+
+.glow-button:active {
+  transform: translateY(0);
+}
+
+.glow-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* =========================
+   🎯 RESULTADO
+========================= */
+#result-area {
+  margin-top: 24px;
+}
+
 .result-box {
-  margin-top: 20px;
   display: flex;
   gap: 10px;
+  align-items: stretch;
 }
 
 .result-box input {
   flex: 1;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  letter-spacing: -0.3px;
 }
 
-/* BOTÃO COPIAR PREMIUM */
 #copyBtn {
-  background: #16a34a;
+  background: linear-gradient(135deg, var(--success) 0%, #16a34a 100%);
   border: none;
-  padding: 0 16px;
-  border-radius: 12px;
+  padding: 0 22px;
+  border-radius: 14px;
   color: #fff;
-  font-weight: bold;
-}
-
-/* ANIMAÇÃO */
-.animate-pop {
-  animation: pop 0.4s ease;
-}
-
-@keyframes pop {
-  from { transform: scale(0.9); opacity: 0; }
-  to { transform: scale(1); opacity: 1; }
-}
-
-/* STATS */
-.stats {
-  margin-top: 10px;
+  font-weight: 700;
   font-size: 13px;
-  color: #94a3b8;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.25);
 }
 
-/* FEATURES */
-.features-grid {
+#copyBtn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.35);
+}
+
+/* =========================
+   📊 STATS
+========================= */
+.stats {
+  margin-top: 14px;
   display: flex;
-  gap: 10px;
-  margin-top: 25px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-muted);
+  background: rgba(255, 255, 255, 0.03);
+  padding: 10px 16px;
+  border-radius: 12px;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+#clicks {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* =========================
+   🎴 FEATURES
+========================= */
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-top: 28px;
 }
 
 .f-item {
-  flex: 1;
-  background: #1e293b;
-  padding: 15px;
-  border-radius: 12px;
+  background: var(--card);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--card-border);
+  padding: 18px 12px;
+  border-radius: 16px;
   text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  transition: transform 0.2s, border-color 0.3s;
 }
 
-/* ABOUT */
+.f-item:hover {
+  transform: translateY(-3px);
+  border-color: rgba(0, 240, 255, 0.2);
+}
+
+.f-item span {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* =========================
+   📝 ABOUT / SEO
+========================= */
 .about {
-  margin-top: 30px;
+  margin-top: 36px;
   text-align: center;
+  padding: 24px;
+  background: var(--card);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+}
+
+.about h3 {
+  color: var(--primary);
+  font-size: 18px;
+  margin-bottom: 14px;
+  font-weight: 700;
 }
 
 .about p {
-  color: #94a3b8;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 10px 0;
 }
 
-/* FAQ */
+.about strong {
+  color: var(--text);
+}
+
+/* =========================
+   ❓ FAQ
+========================= */
 .faq-section {
-  margin-top: 30px;
+  margin-top: 36px;
+}
+
+.faq-section h3 {
+  text-align: center;
+  color: var(--primary);
+  font-size: 18px;
+  margin-bottom: 20px;
+  font-weight: 700;
 }
 
 .faq-item {
-  background: #1e293b;
-  border-radius: 12px;
-  margin-bottom: 10px;
-  padding: 10px;
+  background: var(--card);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  margin-bottom: 12px;
+  overflow: hidden;
+  transition: border-color 0.3s;
 }
 
-/* FOOTER FIXO */
+.faq-item:hover {
+  border-color: rgba(0, 240, 255, 0.15);
+}
+
+.faq-item summary {
+  padding: 18px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text);
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.faq-item summary::after {
+  content: "›";
+  font-size: 22px;
+  color: var(--primary);
+  transition: transform 0.3s;
+  display: inline-block;
+}
+
+.faq-item[open] summary::after {
+  transform: rotate(90deg);
+}
+
+.faq-item p {
+  padding: 0 20px 18px;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* =========================
+   🔗 NAV SEO
+========================= */
+.nav-seo {
+  margin-top: 32px;
+  text-align: center;
+  font-size: 13px;
+  line-height: 2.2;
+}
+
+.nav-seo a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 8px;
+}
+
+.nav-seo a:hover {
+  color: var(--primary);
+  background: rgba(0, 240, 255, 0.05);
+}
+
+/* =========================
+   📋 FOOTER
+========================= */
 .footer-fixed {
-    height: 60px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    font-size: 12px;
+  margin-top: 40px;
+  padding: 24px 0 40px;
+  text-align: center;
+  font-size: 12px;
+  color: #475569;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.footer-links {
+  margin-top: 10px;
 }
 
 .footer-links a {
-  color: var(--primary);
-  margin: 0 10px;
+  color: var(--text-muted);
+  margin: 0 12px;
   font-size: 12px;
+  text-decoration: none;
+  transition: color 0.2s;
 }
 
-body {
-    padding-bottom: 80px;
+.footer-links a:hover {
+  color: var(--primary);
+}
+
+/* =========================
+   🎭 ANIMAÇÕES
+========================= */
+.animate-pop {
+  animation: pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes pop {
+  from { transform: scale(0.85); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+.hidden { display: none !important; }
+
+/* =========================
+   📱 RESPONSIVE
+========================= */
+@media (max-width: 480px) {
+  .app-container { padding: 16px; }
+  .main-card { padding: 24px; }
+  .logo { font-size: 30px; }
+  .features-grid { gap: 8px; }
+  .f-item { padding: 14px 8px; font-size: 12px; }
 }
