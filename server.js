@@ -54,7 +54,7 @@ app.get("/link-curto.html", (req, res) => res.redirect(301, "/"));
 app.get("/url-curta.html", (req, res) => res.redirect(301, "/"));
 
 /* =========================
-   🔗 ENCURTAR LINK (4 CARACTERES + HTTPS)
+   🔗 ENCURTAR LINK (4 CARACTERES + VERIFICA COLISÃO + HTTPS)
 ========================= */
 app.get("/encurtar", async (req, res) => {
   const urlLonga = req.query.url;
@@ -68,9 +68,31 @@ app.get("/encurtar", async (req, res) => {
   }
 
   try {
-    // Código de 4 caracteres (mais curto!)
-    const codigo = Math.random().toString(36).substring(2, 6);
+    let codigo;
+    let existe = true;
+    let tentativas = 0;
 
+    // Gera código e verifica se já existe no banco (evita colisão)
+    while (existe && tentativas < 10) {
+      codigo = Math.random().toString(36).substring(2, 6); // 4 chars
+
+      const check = await fetch(
+        `${SUPABASE_URL}/rest/v1/links?codigo_curto=eq.${codigo}&select=codigo_curto`,
+        {
+          headers: {
+            apikey: SUPABASE_KEY,
+            Authorization: `Bearer ${SUPABASE_KEY}`,
+            Accept: "application/json",
+          },
+        }
+      );
+
+      const data = await check.json();
+      existe = data.length > 0; // Se encontrou, gera outro
+      tentativas++;
+    }
+
+    // Salva no Supabase
     const response = await fetch(`${SUPABASE_URL}/rest/v1/links`, {
       method: "POST",
       headers: {
