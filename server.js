@@ -1,4 +1,3 @@
-// server.js
 import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -55,7 +54,7 @@ app.get("/link-curto.html", (req, res) => res.redirect(301, "/"));
 app.get("/url-curta.html", (req, res) => res.redirect(301, "/"));
 
 /* =========================
-   🔗 ENCURTAR LINK
+   🔗 ENCURTAR LINK (4 CARACTERES + HTTPS)
 ========================= */
 app.get("/encurtar", async (req, res) => {
   const urlLonga = req.query.url;
@@ -69,7 +68,8 @@ app.get("/encurtar", async (req, res) => {
   }
 
   try {
-    const codigo = Math.random().toString(36).substring(2, 8);
+    // Código de 4 caracteres (mais curto!)
+    const codigo = Math.random().toString(36).substring(2, 6);
 
     const response = await fetch(`${SUPABASE_URL}/rest/v1/links`, {
       method: "POST",
@@ -88,22 +88,18 @@ app.get("/encurtar", async (req, res) => {
     if (!response.ok) {
       const text = await response.text();
       console.error("Erro Supabase:", text);
-
-      return res.status(500).json({
-        erro: "Erro ao salvar link"
-      });
+      return res.status(500).json({ erro: "Erro ao salvar link" });
     }
 
-    const linkCurto = `${req.protocol}://${req.get("host")}/${codigo}`;
+    // Força HTTPS no Zeabur (usa o header x-forwarded-proto)
+    const protocolo = req.headers["x-forwarded-proto"] || req.protocol;
+    const linkCurto = `${protocolo}://${req.get("host")}/${codigo}`;
 
     return res.json({ link_curto: linkCurto });
 
   } catch (err) {
     console.error("Erro geral:", err);
-
-    return res.status(500).json({
-      erro: "Erro no servidor"
-    });
+    return res.status(500).json({ erro: "Erro no servidor" });
   }
 });
 
